@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛡️ 資安特攻隊：釣魚郵件偵蒐｜IT COCKPIT 資訊素養情境闖關</title>
+<meta name="description" content="國小資訊素養情境遊戲：扮演資安新兵，跟著阿盾教官一封封揪出釣魚陷阱，學會辨識詐騙的「五看」。由 NotebookLM AI 教官即時對話。">
+<meta property="og:site_name" content="IT COCKPIT">
+<meta property="og:title" content="🛡️ 資安特攻隊：釣魚郵件偵蒐">
+<meta property="og:description" content="扮演資安新兵，跟阿盾教官揪出釣魚陷阱、集滿 5 枚資安徽章晉升正式隊員！">
+<style>
+  :root{
+    --bg:#070b16; --bg2:#0c1322; --panel:#111b2e; --panel2:#16233b; --surface:#111b2e;
+    --cyan:#00e5ff; --green:#2bff88; --gold:#ffcf5c; --red:#ff5470;
+    --ink:#eaf2ff; --text:#eaf2ff; --muted:#9fb2d0; --dim:#9fb2d0; --line:rgba(120,160,220,.18);
+    --shadow:0 10px 30px rgba(0,0,0,.45); --shadow-px:0 6px 20px rgba(0,0,0,.5);
+    /* 與 IT COCKPIT 駕駛艙家族相容的色彩別名 */
+    --c1:#00e5ff; --c2:#ffcf5c; --c3:#ff4081; --c4:#2bff88; --c5:#ff5470;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; font-family:"Noto Sans TC",system-ui,-apple-system,"Segoe UI",sans-serif;
+    color:var(--ink); background:var(--bg);
+    background-image:
+      radial-gradient(900px 500px at 80% -10%, rgba(0,229,255,.10), transparent 60%),
+      radial-gradient(800px 500px at 0% 10%, rgba(43,255,136,.07), transparent 55%),
+      linear-gradient(rgba(120,160,220,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120,160,220,.05) 1px, transparent 1px);
+    background-size:auto,auto,40px 40px,40px 40px;
+    line-height:1.7; overflow-x:hidden;
+  }
+  a{color:inherit}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px}
+
+  /* nav / IT COCKPIT brand bar */
+  nav{position:sticky; top:0; z-index:50; backdrop-filter:blur(10px);
+    background:rgba(7,11,22,.72); border-bottom:1px solid var(--line)}
+  .nav-in{max-width:1080px; margin:0 auto; padding:10px 20px; display:flex; align-items:center; gap:16px}
+  .cockpit-tag{display:inline-flex; align-items:center; gap:6px; font-size:.74rem; font-weight:900;
+    letter-spacing:1.5px; color:#04121a; background:linear-gradient(135deg,var(--c1),#0096c7);
+    padding:4px 10px; border-radius:7px; white-space:nowrap}
+  .brand{font-weight:900; letter-spacing:.5px; font-size:1rem; white-space:nowrap}
+  .brand .sh{color:var(--cyan)}
+  .nav-links{display:flex; gap:18px; margin-left:auto; flex-wrap:wrap}
+  .nav-links a{color:var(--muted); text-decoration:none; font-size:.9rem; font-weight:600; transition:.15s}
+  .nav-links a:hover{color:var(--cyan)}
+
+  /* hero */
+  header.hero{position:relative; padding:60px 0 40px; text-align:center; overflow:hidden}
+  .scan{position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(transparent 0%, rgba(0,229,255,.06) 50%, transparent 100%);
+    background-size:100% 6px; animation:scan 7s linear infinite; opacity:.5}
+  @keyframes scan{from{background-position:0 -100vh}to{background-position:0 100vh}}
+  .shield{font-size:4.2rem; filter:drop-shadow(0 0 18px rgba(0,229,255,.55)); animation:pulse 2.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 12px rgba(0,229,255,.4))}50%{transform:scale(1.06);filter:drop-shadow(0 0 26px rgba(0,229,255,.75))}}
+  .hero h1{font-size:2.5rem; margin:.3em 0 .1em; font-weight:900; letter-spacing:.5px;
+    background:linear-gradient(90deg,#fff,var(--cyan)); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .hero .sub{color:var(--muted); font-size:1.08rem; max-width:640px; margin:0 auto 6px}
+  .pills{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:18px 0 26px}
+  .pill{background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:6px 15px; font-size:.86rem; color:var(--muted)}
+  .pill b{color:var(--ink)}
+  .cta{display:flex; gap:14px; justify-content:center; flex-wrap:wrap}
+  .btn{display:inline-flex; align-items:center; gap:9px; text-decoration:none; font-weight:800;
+    padding:14px 26px; border-radius:14px; font-size:1.05rem; transition:.18s; border:1px solid transparent; cursor:pointer}
+  .btn-main{background:linear-gradient(135deg,var(--cyan),#0096c7); color:#04121a;
+    box-shadow:0 8px 24px rgba(0,229,255,.35)}
+  .btn-main:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,229,255,.5)}
+  .btn-ghost{background:var(--panel); color:var(--ink); border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--cyan); color:var(--cyan)}
+
+  section{padding:42px 0}
+  .sec-h{display:flex; align-items:center; gap:10px; font-size:1.45rem; font-weight:900; margin:0 0 6px}
+  .sec-h .ic{font-size:1.5rem}
+  .sec-sub{color:var(--muted); margin:0 0 22px; font-size:.98rem}
+
+  .grid{display:grid; gap:16px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g5{grid-template-columns:repeat(5,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px; transition:.18s}
+  .card:hover{transform:translateY(-3px); border-color:rgba(0,229,255,.4); box-shadow:var(--shadow)}
+  .card .ti{font-weight:800; margin:8px 0 4px; font-size:1.02rem}
+  .card .tx{color:var(--muted); font-size:.9rem}
+  .card .em{font-size:1.8rem}
+
+  .game{background:linear-gradient(135deg,var(--panel2),var(--panel));
+    border:1px solid rgba(0,229,255,.3); border-radius:22px; padding:30px; position:relative; overflow:hidden}
+  .game::before{content:"🛡️"; position:absolute; right:-14px; top:-20px; font-size:9rem; opacity:.06}
+  .game h3{font-size:1.5rem; margin:0 0 4px; font-weight:900}
+  .game .lead{color:var(--muted); margin:0 0 22px}
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:26px}
+  .step{background:rgba(0,0,0,.25); border:1px solid var(--line); border-radius:14px; padding:16px}
+  .step .n{display:inline-flex; width:30px; height:30px; align-items:center; justify-content:center;
+    background:var(--cyan); color:#04121a; font-weight:900; border-radius:9px; margin-bottom:8px}
+  .step .st{font-weight:800; font-size:.98rem; margin-bottom:2px}
+  .step .sx{color:var(--muted); font-size:.86rem}
+  .game-foot{display:flex; align-items:center; gap:16px; flex-wrap:wrap}
+  .badge-note{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:.86rem}
+  .badge-note .b{color:var(--gold)}
+
+  .look{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px; text-align:center}
+  .look:hover{border-color:rgba(43,255,136,.45); transform:translateY(-3px)}
+  .look .e{font-size:1.7rem}
+  .look .t{font-weight:800; margin:6px 0 6px; font-size:.98rem}
+  .look .m{color:var(--green); font-size:.82rem; font-weight:600; background:rgba(43,255,136,.08);
+    border-radius:8px; padding:6px 8px; line-height:1.5}
+
+  .res{display:flex; gap:14px; align-items:center; text-decoration:none}
+  .res .e{font-size:2rem}
+  .res .ti{font-weight:800}
+  .res .tx{color:var(--muted); font-size:.86rem}
+  .teacher{background:var(--panel); border:1px dashed var(--line); border-radius:16px; padding:22px}
+  .teacher ol{margin:10px 0 0; padding-left:20px; color:var(--muted)}
+  .teacher li{margin:5px 0}
+  .teacher b{color:var(--ink)}
+
+  /* ===== 浮動工具面板（IT COCKPIT 家族慣例：z-index 400 > toolbar 300 > canvas 250）===== */
+  .float-tools{position:fixed; right:18px; bottom:18px; z-index:400; display:flex; flex-direction:column; gap:10px}
+  .float-btn{width:52px; height:52px; border-radius:50%; border:2px solid var(--c1); cursor:pointer;
+    background:var(--surface); color:var(--ink); font-size:1.35rem; display:flex; align-items:center; justify-content:center;
+    box-shadow:var(--shadow-px); transition:.15s}
+  .float-btn:hover{transform:translateY(-2px); box-shadow:0 0 16px var(--c1); color:var(--c1)}
+  .float-btn.pink{border-color:var(--c3)}
+  .float-btn.pink:hover{box-shadow:0 0 16px var(--c3); color:var(--c3)}
+
+  /* 抽籤面板 */
+  .tool-panel{position:fixed; right:84px; bottom:18px; z-index:401; width:260px;
+    background:var(--surface); border:2px solid var(--c1); border-radius:14px; padding:14px 16px; box-shadow:var(--shadow-px); display:none}
+  .tool-panel.show{display:block}
+  .tool-panel h4{margin:0 0 10px; font-size:1rem; display:flex; align-items:center; justify-content:space-between}
+  .tool-panel h4 .close{cursor:pointer; color:var(--muted)}
+  .btn-primary{background:var(--c1); color:#04121a; border:none; padding:8px 12px; border-radius:9px; font-family:inherit; font-weight:800; cursor:pointer; font-size:.9rem}
+  .lottery-result{margin-top:10px; text-align:center; font-size:1.5rem; font-weight:900; color:var(--c2); min-height:36px; padding:6px; background:rgba(0,0,0,.25); border-radius:9px}
+
+  /* 畫筆 canvas + 工具列 */
+  #drawCanvas{position:fixed; inset:0; width:100%; height:100%; z-index:250; pointer-events:none; background:transparent}
+  #drawCanvas.active{pointer-events:all; cursor:crosshair}
+  .draw-toolbar{position:fixed; left:18px; bottom:18px; z-index:300; background:var(--surface);
+    border:2px solid var(--c1); border-radius:12px; padding:10px 14px; display:none; gap:8px; align-items:center; box-shadow:var(--shadow-px)}
+  .draw-toolbar.show{display:flex}
+  .draw-toolbar .color-dot{width:26px; height:26px; border:2px solid #000; border-radius:50%; cursor:pointer; padding:0; transition:.2s}
+  .draw-toolbar .color-dot.active{transform:scale(1.2); box-shadow:0 0 8px currentColor}
+  .draw-toolbar .draw-clear{background:transparent; border:2px solid var(--c5); color:var(--c5); padding:4px 12px; border-radius:8px; font-family:inherit; font-weight:700; cursor:pointer; font-size:.85rem}
+
+  .site-credit{text-align:center; padding:30px 16px 40px; font-size:13px; color:rgba(255,255,255,.5);
+    border-top:1px solid var(--line); margin-top:20px}
+  .site-credit__heart{display:inline-block; margin:0 2px; filter:saturate(1.2)}
+  .site-credit__author{color:rgba(255,255,255,.7); text-decoration:none; border-bottom:1px dotted currentColor; padding-bottom:1px; transition:.2s}
+  .site-credit__author:hover{color:var(--cyan); border-bottom-color:var(--cyan)}
+  .skd{color:rgba(255,255,255,.32); font-size:11.5px; margin-top:8px}
+
+  @media(max-width:860px){
+    .g4{grid-template-columns:repeat(2,1fr)} .g5{grid-template-columns:repeat(2,1fr)}
+    .g2{grid-template-columns:1fr} .steps{grid-template-columns:1fr}
+    .hero h1{font-size:2rem} .nav-links{display:none}
+    .tool-panel{right:18px; bottom:80px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <span class="cockpit-tag">⛯ IT COCKPIT</span>
+    <div class="brand">🛡️ <span class="sh">資安特攻隊</span></div>
+    <div class="nav-links">
+      <a href="#goal">學習目標</a>
+      <a href="#play">開始闖關</a>
+      <a href="#look">五看口訣</a>
+      <a href="#res">教材</a>
+      <a href="#teacher">老師導覽</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="scan"></div>
+  <div class="wrap">
+    <div class="shield">🛡️</div>
+    <h1>資安特攻隊：釣魚郵件偵蒐</h1>
+    <p class="sub">扮演鱻盾資安特攻隊的「資安新兵」，跟著阿盾教官一封封揪出釣魚陷阱，集滿 5 枚資安徽章晉升正式隊員！</p>
+    <div class="pills">
+      <span class="pill">🎓 對象：<b>國小高年級</b></span>
+      <span class="pill">🧭 領域：<b>資訊科技 · 數位素養</b></span>
+      <span class="pill">⏱️ 時長：<b>約 1 節課</b></span>
+      <span class="pill">🤖 引擎：<b>NotebookLM AI 教官</b></span>
+    </div>
+    <div class="cta">
+      <a class="btn btn-main" href="https://notebooklm.google.com/notebook/018c2475-55f2-4e48-9a7f-ee53412bc1ac" target="_blank" rel="noopener noreferrer">🎮 開始闖關</a>
+      <a class="btn btn-ghost" href="#play">📖 怎麼玩？</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="goal">
+    <div class="sec-h"><span class="ic">🎯</span>這節課要學會</div>
+    <p class="sec-sub">玩完這場闖關，小隊員會帶走四個數位防身術。</p>
+    <div class="grid g4">
+      <div class="card"><div class="em">🕵️</div><div class="ti">辨識網路釣魚</div><div class="tx">用「五看」拆穿假冒銀行、老師、官方的詐騙訊息。</div></div>
+      <div class="card"><div class="em">🔑</div><div class="ti">密碼安全四守則</div><div class="tx">夠長、不重複、不外洩、開啟兩步驟驗證。</div></div>
+      <div class="card"><div class="em">🛡️</div><div class="ti">保護個人資料</div><div class="tx">送出個資前先想：對方為什麼需要？管道可信嗎？</div></div>
+      <div class="card"><div class="em">📞</div><div class="ti">遇詐騙打 165</div><div class="tx">萬一上當，先告訴大人、改密碼、撥打 165 反詐騙專線。</div></div>
+    </div>
+  </section>
+
+  <section id="play">
+    <div class="sec-h"><span class="ic">🎮</span>情境闖關：實戰訓練</div>
+    <p class="sec-sub">這是本課的核心活動 —— 一場跟 AI 教官的真人對話闖關。</p>
+    <div class="game">
+      <h3>🛡️ 進入鱻盾資安特攻隊聊天室</h3>
+      <p class="lead">阿盾教官會把攔截到的可疑訊息一封封交給你，由你判斷真假、揪出破綻。答對集徽章，集滿 5 枚晉升「鱻盾正式隊員」！</p>
+      <div class="steps">
+        <div class="step"><span class="n">1</span><div class="st">進入聊天室</div><div class="sx">點「開始闖關」打開特攻隊筆記本，向教官報到。</div></div>
+        <div class="step"><span class="n">2</span><div class="st">接收可疑訊息</div><div class="sx">教官給你一封訊息，判斷它是 ✅ 安全還是 ⚠️ 釣魚陷阱。</div></div>
+        <div class="step"><span class="n">3</span><div class="st">說出破綻集徽章</div><div class="sx">講出哪裡露馬腳，答對得徽章。卡關可說「請求提示」。</div></div>
+      </div>
+      <div class="game-foot">
+        <a class="btn btn-main" href="https://notebooklm.google.com/notebook/018c2475-55f2-4e48-9a7f-ee53412bc1ac" target="_blank" rel="noopener noreferrer">🎮 開始闖關（進入聊天室）</a>
+        <span class="badge-note"><span class="b">🏅</span> 集滿 <b>5 枚資安徽章</b> 即可晉升正式隊員</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="look">
+    <div class="sec-h"><span class="ic">📋</span>辨識釣魚的「五看」口訣</div>
+    <p class="sec-sub">闖關前先記起來，遇到可疑訊息照著看一遍，破綻無所遁形。（上課可用右下角 ✏️ 畫筆圈重點）</p>
+    <div class="grid g5">
+      <div class="look"><div class="e">📧</div><div class="t">一看寄件人</div><div class="m">真公司不會用免費信箱寄重要通知</div></div>
+      <div class="look"><div class="e">⏰</div><div class="t">二看語氣</div><div class="m">越急越要慢，正派機構不會恐嚇你馬上點</div></div>
+      <div class="look"><div class="e">🔗</div><div class="t">三看連結</div><div class="m">點之前先看真網址，對不上就是陷阱</div></div>
+      <div class="look"><div class="e">🔒</div><div class="t">四看要求</div><div class="m">密碼和驗證碼，天王老子來要都不給</div></div>
+      <div class="look"><div class="e">🎁</div><div class="t">五看好康錯字</div><div class="m">太好康＋一堆錯字，假的機率超高</div></div>
+    </div>
+  </section>
+
+  <section id="res">
+    <div class="sec-h"><span class="ic">📚</span>隨身教材（已分享在筆記本裡）</div>
+    <p class="sec-sub">點開筆記本後，右側「工作室」面板就能看到這兩份 AI 自動生成的教材。</p>
+    <div class="grid g2">
+      <a class="card res" href="https://notebooklm.google.com/notebook/018c2475-55f2-4e48-9a7f-ee53412bc1ac" target="_blank" rel="noopener noreferrer">
+        <span class="e">📖</span>
+        <span><span class="ti">遊戲說明書（簡報）</span><br><span class="tx">玩法、五看口訣、密碼與個資重點，一頁頁帶你看懂。</span></span>
+      </a>
+      <a class="card res" href="https://notebooklm.google.com/notebook/018c2475-55f2-4e48-9a7f-ee53412bc1ac" target="_blank" rel="noopener noreferrer">
+        <span class="e">📊</span>
+        <span><span class="ti">核心學習內容總表（資料表）</span><br><span class="tx">五大破綻 × 怎麼檢查 × 口訣 × 案例對照，複習一目了然。</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section id="teacher">
+    <div class="sec-h"><span class="ic">👩‍🏫</span>老師導覽</div>
+    <p class="sec-sub">建議帶法，30–40 分鐘走完一輪。右下角有 ✏️ 畫筆標註與 🎲 抽籤器，方便上課操作。</p>
+    <div class="teacher">
+      <ol>
+        <li><b>暖身（5 分）</b>：用本頁「五看口訣」帶全班念過一遍，問問學生有沒有收過可疑訊息。</li>
+        <li><b>示範（5 分）</b>：老師投影「開始闖關」進聊天室，全班一起破解案件 1，示範怎麼跟教官對話、怎麼說破綻。</li>
+        <li><b>分組闖關（20 分）</b>：兩三人一組各自進聊天室闖關，目標集滿 5 枚徽章。卡關時引導用「請求提示」。可用 🎲 抽籤器點組別發表。</li>
+        <li><b>收斂（5–10 分）</b>：打開「核心學習總表」對照，請各組分享最容易上當的一題與原因。</li>
+        <li><b>叮嚀</b>：強調 <b>密碼、OTP 驗證碼絕不外洩</b>，遇到詐騙打 <b>165</b>、先告訴大人。</li>
+      </ol>
+    </div>
+  </section>
+
+</div>
+
+<footer class="site-credit">
+  Made with <span class="site-credit__heart" aria-label="愛心">❤️</span> by
+  <a href="https://www.smes.tyc.edu.tw/modules/tadnews/page.php?ncsn=11&nsn=16#a5" target="_blank" rel="noopener noreferrer" class="site-credit__author">阿凱老師</a>
+  <div class="skd">桃園市龍潭區石門國民小學 · IT COCKPIT 資訊素養情境闖關　|　AI 教官由 NotebookLM 即時生成</div>
+</footer>
+
+<!-- ===== 浮動工具面板 ===== -->
+<div class="float-tools">
+  <button class="float-btn pink" onclick="toggleDraw()" title="畫筆標註" id="drawToggleBtn">✏️</button>
+  <button class="float-btn" onclick="togglePanel('lottery')" title="隨機抽號">🎲</button>
+  <button class="float-btn" onclick="toggleFullscreen()" title="全螢幕">⛶</button>
+  <button class="float-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到頂端">🔝</button>
+</div>
+
+<!-- 抽籤面板（號碼模式，IT COCKPIT 慣例）-->
+<div class="tool-panel" id="panel-lottery">
+  <h4>🎲 隨機抽號 <span class="close" onclick="togglePanel('lottery')">✕</span></h4>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;font-size:.85rem;color:var(--dim);flex-wrap:wrap">
+    <span>號碼</span>
+    <input type="number" id="lot-min" value="1" min="1" style="width:52px;padding:4px 6px;background:var(--bg);border:1px solid var(--c1);color:var(--text);font-family:inherit;border-radius:6px">
+    <span>～</span>
+    <input type="number" id="lot-max" value="30" min="1" style="width:52px;padding:4px 6px;background:var(--bg);border:1px solid var(--c1);color:var(--text);font-family:inherit;border-radius:6px">
+    <label style="display:flex;align-items:center;gap:4px;margin-left:auto;cursor:pointer">
+      <input type="checkbox" id="lot-unique" checked>不重複
+    </label>
+  </div>
+  <div style="display:flex;gap:6px">
+    <button class="btn-primary" onclick="doLottery()" style="flex:1">🎰 抽一個</button>
+    <button class="btn-primary" onclick="resetLottery()" style="background:var(--c5);color:#fff">↻</button>
+  </div>
+  <div class="lottery-result" id="lot-out">等待抽號...</div>
+</div>
+
+<!-- 畫筆 canvas + 工具列 -->
+<canvas id="drawCanvas"></canvas>
+<div class="draw-toolbar" id="drawToolbar">
+  <span style="font-size:.85rem;color:var(--dim)">🖊️</span>
+  <button class="color-dot active" style="background:#ff4081" onclick="setPenColor('#ff4081',this)"></button>
+  <button class="color-dot" style="background:#ffd740" onclick="setPenColor('#ffd740',this)"></button>
+  <button class="color-dot" style="background:#00e5ff" onclick="setPenColor('#00e5ff',this)"></button>
+  <button class="color-dot" style="background:#69ff47" onclick="setPenColor('#69ff47',this)"></button>
+  <button class="color-dot" style="background:#fff" onclick="setPenColor('#fff',this)"></button>
+  <button class="draw-clear" onclick="clearDrawing()">清除</button>
+</div>
+
+<script>
+  /* 抽籤器（號碼模式）*/
+  let lotPool = [];
+  function refillLotPool(){
+    const min = parseInt(document.getElementById('lot-min').value) || 1;
+    const max = parseInt(document.getElementById('lot-max').value) || 30;
+    if(min > max) return false;
+    lotPool = []; for(let i=min;i<=max;i++) lotPool.push(i);
+    return true;
+  }
+  function doLottery(){
+    const unique = document.getElementById('lot-unique').checked;
+    const min = parseInt(document.getElementById('lot-min').value) || 1;
+    const max = parseInt(document.getElementById('lot-max').value) || 30;
+    if(min > max){alert('最小號必須 ≤ 最大號！');return;}
+    if(unique && lotPool.length === 0) refillLotPool();
+    const out = document.getElementById('lot-out');
+    const timer = setInterval(()=>{
+      const n = Math.floor(Math.random()*(max-min+1)) + min;
+      out.textContent = n + ' 號';
+    }, 60);
+    setTimeout(()=>{
+      clearInterval(timer);
+      let num;
+      if(unique){
+        if(lotPool.length === 0) refillLotPool();
+        const idx = Math.floor(Math.random()*lotPool.length);
+        num = lotPool.splice(idx, 1)[0];
+      } else {
+        num = Math.floor(Math.random()*(max-min+1)) + min;
+      }
+      out.textContent = '🌟 ' + num + ' 號 🌟';
+    }, 1500);
+  }
+  function resetLottery(){ refillLotPool(); document.getElementById('lot-out').textContent = '等待抽號...'; }
+  function togglePanel(name){ document.getElementById('panel-'+name).classList.toggle('show'); }
+
+  /* 全螢幕 */
+  function toggleFullscreen(){
+    if(!document.fullscreenElement){ document.documentElement.requestFullscreen?.(); }
+    else { document.exitFullscreen?.(); }
+  }
+
+  /* 畫筆標註（canvas 永遠存在、永遠透明，只切 pointer-events）*/
+  let drawActive=false, penColor='#ff4081', penSize=4;
+  let drawCanvas, drawCtx, isDrawing=false, dLastX, dLastY;
+  function initDraw(){
+    drawCanvas=document.getElementById('drawCanvas');
+    drawCtx=drawCanvas.getContext('2d');
+    drawCanvas.width=window.innerWidth; drawCanvas.height=window.innerHeight;
+    drawCanvas.addEventListener('mousedown',e=>{if(!drawActive)return;isDrawing=true;dLastX=e.clientX;dLastY=e.clientY;});
+    drawCanvas.addEventListener('mousemove',e=>{
+      if(!drawActive||!isDrawing)return;
+      drawCtx.strokeStyle=penColor;drawCtx.lineWidth=penSize;drawCtx.lineCap='round';
+      drawCtx.beginPath();drawCtx.moveTo(dLastX,dLastY);drawCtx.lineTo(e.clientX,e.clientY);drawCtx.stroke();
+      dLastX=e.clientX;dLastY=e.clientY;
+    });
+    drawCanvas.addEventListener('mouseup',()=>isDrawing=false);
+    drawCanvas.addEventListener('touchstart',e=>{if(!drawActive)return;e.preventDefault();const t=e.touches[0];isDrawing=true;dLastX=t.clientX;dLastY=t.clientY;},{passive:false});
+    drawCanvas.addEventListener('touchmove',e=>{
+      if(!drawActive||!isDrawing)return;e.preventDefault();
+      const t=e.touches[0];
+      drawCtx.strokeStyle=penColor;drawCtx.lineWidth=penSize;drawCtx.lineCap='round';
+      drawCtx.beginPath();drawCtx.moveTo(dLastX,dLastY);drawCtx.lineTo(t.clientX,t.clientY);drawCtx.stroke();
+      dLastX=t.clientX;dLastY=t.clientY;
+    },{passive:false});
+    drawCanvas.addEventListener('touchend',()=>isDrawing=false);
+    window.addEventListener('resize',()=>{drawCanvas.width=window.innerWidth;drawCanvas.height=window.innerHeight;});
+  }
+  function toggleDraw(){
+    drawActive=!drawActive;
+    drawCanvas.classList.toggle('active',drawActive);
+    document.getElementById('drawToolbar').classList.toggle('show',drawActive);
+    document.getElementById('drawToggleBtn').style.background=drawActive?'var(--c4)':'';
+  }
+  function setPenColor(c,el){
+    penColor=c;
+    document.querySelectorAll('.draw-toolbar .color-dot').forEach(d=>d.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function clearDrawing(){if(drawCtx)drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);}
+
+  document.addEventListener('DOMContentLoaded', initDraw);
+</script>
+
+</body>
+</html>
