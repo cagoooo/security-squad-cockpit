@@ -16,7 +16,7 @@
 辨識網路釣魚（五看）、密碼安全四守則、保護個人資料、遇詐騙打 165。
 
 ---
-Made with ❤️ by [阿凱老師](https://www.smes.tyc.edu.tw/modules/tadnews/page.php?ncsn=11&nsn=16#a5) · 桃園市龍潭區石門國民小學
+Made with ❤️ by [阿凱老師](https://www.smes.tyc.edu.tw/modules/school/index.php?department_id=2&zone_id=0&page_id=2&content_id=11&type=news&from_op=all_news#a5) · 桃園市龍潭區石門國民小學
 
 ---
 
